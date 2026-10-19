@@ -169,6 +169,29 @@ def _cache_age_hours(record: dict) -> float:
     return (datetime.now(timezone.utc) - fetched_at).total_seconds() / 3600
 
 
+def _friendly_error(exc: Exception) -> str:
+    """Turn raw rate-limit errors (HTTP 429) into a message that makes clear
+    it's the upstream provider throttling, not the app breaking. Any other
+    error passes through unchanged."""
+    msg = str(exc)
+    if "429" not in msg and "too many requests" not in msg.lower():
+        return msg
+    low = msg.lower()
+    # pytrends says "Google returned a response with code 429"; requests
+    # includes the URL, so the host identifies the source.
+    if "google" in low:
+        source = "Google Trends"
+    elif "wikimedia" in low or "wikipedia" in low:
+        source = "Wikipedia"
+    else:
+        source = "The data provider"
+    return (
+        f"{source} is temporarily limiting how many requests it accepts (HTTP 429). "
+        "This is the provider throttling free, keyless traffic, not a bug in the app. "
+        "Try again in a few minutes, or click one of the quick examples in the sidebar (those are pre-cached)."
+    )
+
+
 def fetch_with_cache(
     key: str,
     fetch_fn: Callable[[], Any],
@@ -200,9 +223,9 @@ def fetch_with_cache(
                 from_cache=True,
                 stale=True,
                 fetched_at=cached["fetched_at"],
-                error=str(exc),
+                error=_friendly_error(exc),
             )
-        raise DataUnavailable(str(exc)) from exc
+        raise DataUnavailable(_friendly_error(exc)) from exc
 
 
 # --------------------------------------------------------------------------

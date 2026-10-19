@@ -4,39 +4,24 @@ import streamlit as st
 
 import data_sources as ds
 
-# ---- Fill these in to personalize the footer; left blank, they just don't render ----
+
 AUTHOR_NAME = "Yevgen K"
-GITHUB_URL = ""
-LINKEDIN_URL = ""
 
 st.set_page_config(page_title="Trend Atlas", page_icon="\U0001F30D", layout="wide")
 
-# Streamlit auto-shows a "Press Enter to submit form" hint under every
-# text_input inside an st.form - purely cosmetic, so it's hidden with a
-# scoped CSS override rather than restructuring the form to avoid it.
+
 st.markdown(
     "<style>div[data-testid='InputInstructions'] { display: none; }</style>",
     unsafe_allow_html=True,
 )
 
-# Defined in data_sources.py (not here) so refresh_cache.py can warm the
-# cache for the exact same pairs shown below - see the comment on it there.
+
+# cache for the exact same pairs shown below 
 QUICK_EXAMPLES = ds.QUICK_EXAMPLES
 
 # --------------------------------------------------------------------------
 # Session state / sidebar controls
 # --------------------------------------------------------------------------
-#
-# The two term boxes are bound to session_state via an explicit `key=` (and
-# no `value=` argument) rather than the more obvious-looking
-# `st.text_input(..., value=st.session_state["word1"])`. That obvious version
-# has a real bug: Streamlit derives a widget's identity from a hash that
-# includes its `value` argument when no `key` is given, so every time
-# `word1` changed (i.e. after every "Compare" click), the box got a *new*
-# identity and lost track of whatever the user had just typed into the *old*
-# one - showing stale text, or applying an edit to the wrong term. Binding to
-# a stable `key` instead makes session_state the single source of truth for
-# the box's live content, so its identity never moves.
 
 st.session_state.setdefault("word1_input", QUICK_EXAMPLES[0][0])
 st.session_state.setdefault("word2_input", QUICK_EXAMPLES[0][1])
