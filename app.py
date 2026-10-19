@@ -217,10 +217,6 @@ with tab_wiki:
 footer_bits = []
 if AUTHOR_NAME:
     footer_bits.append(f"Built by {AUTHOR_NAME}")
-if GITHUB_URL:
-    footer_bits.append(f"[GitHub]({GITHUB_URL})")
-if LINKEDIN_URL:
-    footer_bits.append(f"[LinkedIn]({LINKEDIN_URL})")
 if footer_bits:
     st.divider()
     st.caption(" · ".join(footer_bits))
