@@ -98,7 +98,7 @@ with st.expander("About this project"):
         - **Wikipedia** (via Wikimedia's pageviews + opensearch APIs) — daily
           pageviews for each term's (auto-matched) Wikipedia article.
 
-        This only took a couple hours to make, think of all the cool stuff I can build for you!
+         Last updated 2026-10-19 
         """
     )
 
