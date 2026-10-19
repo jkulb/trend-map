@@ -34,7 +34,12 @@ def _run(label: str, fn) -> None:
     try:
         result = fn()
         n = len(result.data) if hasattr(result.data, "__len__") else "?"
-        print(f"  OK   {label} ({n} rows)")
+        if result.stale:
+            # The live call failed (usually a 429) and fetch_with_cache quietly
+            # fell back to the old copy - nothing was actually refreshed.
+            print(f"  STALE {label}: live fetch failed, kept copy from {result.fetched_at} ({result.error})")
+        else:
+            print(f"  OK   {label} ({n} rows)")
     except ds.DataUnavailable as exc:
         print(f"  FAIL {label}: {exc}")
     except Exception as exc:  # noqa: BLE001 - report anything unexpected, don't stop the run
